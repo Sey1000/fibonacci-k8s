@@ -12,7 +12,7 @@ script:
 
 after_success:
   # Build each images
-  - docker build -t sey1000/multi-client ./client
+  - docker build -t sey1000/multi-client:v5 ./client
   - docker build -t sey1000/multi-nginx ./nginx
   - docker build -t sey1000/multi-server ./server
   - docker build -t sey1000/multi-worker ./worker
