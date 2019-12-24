@@ -12,8 +12,18 @@ spec:
       labels:
         component: postgres
     spec:
+      # I need some sort of long-term storage
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
       containers:
         - name: postgres
           image: postgres
           ports:
             - containerPort: 5432
+          volumeMounts:
+            # should match the pod spec `volume` name
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres # specific to postgres to override default behavior
