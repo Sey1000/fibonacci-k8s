@@ -27,3 +27,10 @@ spec:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
               subPath: postgres # specific to postgres to override default behavior
+          env:
+            # override default password
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD
