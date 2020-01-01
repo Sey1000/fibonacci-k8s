@@ -1,0 +1,41 @@
+sudo: required # for docker
+services:
+  - docker
+before_install:
+  - openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d
+  # install Google Cloud SDK CLI
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  # Configure the SDK with our Google Cloud auth info
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud config set project fibonacci-k8s-263616
+  - gcloud config set compute/zone europe-west1-b
+  - gcloud container clusters get-credentials fibonacci-cluster
+    # Activating service account:
+    # * Create a Service Account (similar to AWS IAM)
+    # * Download service account credentials in a json file
+    # * Download and install the Travis CLI
+        # $ docker run -it -v $(pwd):/app ruby:2.3 sh
+        # $ gem install travis
+        # $ travis login
+        # Copy json file into the 'volumed' directory so we can use it
+        #   in the container
+        # $ travis encrypt-file service-account.json
+    # * Encrypt and upload the json file to our Travis account
+    # * In travis.yml, add code to unencrypt the json file
+    #   and load it into GCloud SDK
+
+  # Login to Docker CLI: add these env vars into Travis CI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  # Build the 'test' version of multi-client
+  - docker build -t sey1000/react-test -f ./client/Dockerfile.dev ./client
+
+# Run tests
+script:
+  - docker run -e CI=true sey1000/react-test npm run test
+
+# If tests are successful, run a script to deploy newest images
+# Build all our images, tag each one, push each to docker hub
+# Apply all configs in the 'k8s' folder
+# Imperatively set latest images on each deployment
