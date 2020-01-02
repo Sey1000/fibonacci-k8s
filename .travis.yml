@@ -1,6 +1,14 @@
 sudo: required # for docker
 services:
   - docker
+
+env:
+  global:
+    # Get current commit SHA to be used in deploy step
+    - SHA=$(git rev-parse HEAD)
+    # Disable any user input prompt (y/n questions) in gcloud sdk
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+
 before_install:
   - openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d
   # install Google Cloud SDK CLI
@@ -9,6 +17,7 @@ before_install:
   # Configure the SDK with our Google Cloud auth info
   - gcloud components update kubectl
   - gcloud auth activate-service-account --key-file service-account.json
+  # !! Need to run next 3 into cloud shell for a new cluster
   - gcloud config set project fibonacci-k8s-263616
   - gcloud config set compute/zone europe-west1-b
   - gcloud container clusters get-credentials fibonacci-cluster
