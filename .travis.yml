@@ -36,6 +36,12 @@ script:
   - docker run -e CI=true sey1000/react-test npm run test
 
 # If tests are successful, run a script to deploy newest images
-# Build all our images, tag each one, push each to docker hub
-# Apply all configs in the 'k8s' folder
-# Imperatively set latest images on each deployment
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  # Within ./deploy.sh:
+  #   Build all our images, tag each one, push each to docker hub
+  #   Apply all configs in the 'k8s' folder
+  #   Imperatively set latest images on each deployment
+  on:
+    branch: master
