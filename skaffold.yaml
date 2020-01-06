@@ -1,0 +1,37 @@
+# apiVersion: skaffold/v1beta2
+# kind: Config
+# build:
+#   local:
+#     # By default it tries to push image everytime it gets built
+#     push: false
+#   artifacts:
+#     - image: sey1000/multi-client
+#       context: client
+#       docker:
+#         dockerfile: Dockerfile.dev
+#       # Anytime any of this changes inject it to the container
+#       sync:
+#         '**/*.js': .
+#         '**/*.css': .
+#         '**/*.html': .
+#     - image: sey1000/multi-server
+#       context: server
+#       docker:
+#         dockerfile: Dockerfile.dev
+#       sync:
+#         '**/*.js': .
+#     - image: sey1000/multi-worker
+#       context: worker
+#       docker:
+#         dockerfile: Dockerfile.dev
+#       sync:
+#         '**/*.js': .
+# deploy:
+#   kubectl:
+#     manifests:
+#       - k8s/client-deployment.yaml
+#       - k8s/server-deployment.yaml
+#       - k8s/worker-deployment.yaml
+#       - k8s/server-cluster-ip-service.yaml
+#       - k8s/server-cluster-ip-service.yaml
+#       # Do not add anything that needs to be persistent
